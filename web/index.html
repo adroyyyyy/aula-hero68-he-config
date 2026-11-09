@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:" />
+<title>HERO 68 Config</title>
+<style>
+  :root {
+    --bg: #f4f4f1; --panel: #ffffff; --ink: #1d1d1b; --muted: #75756f; --line: #e2e2dc;
+    --key: #fbfbf8; --key-ink: #2a2a27; --accent: #d9480f; --accent-soft: #ffe8dc; --ok: #2b8a3e; --err: #c92a2a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --panel: #1f1f1d; --ink: #ececea; --muted: #9a9a93; --line: #31312e;
+      --key: #2a2a27; --key-ink: #e6e6e2; --accent: #ff7a3d; --accent-soft: #3a2418; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 16px; padding: 18px 28px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
+  header .info { color: var(--muted); font-size: 13px; }
+  header .spacer { flex: 1; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 7px 14px; border-radius: 8px; cursor: pointer; }
+  button:hover { border-color: var(--muted); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 28px 60px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tabs button { border-radius: 999px; }
+  .board { position: relative; width: 100%; aspect-ratio: 720 / 225; user-select: none; }
+  .k { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--key);
+       border: 1px solid var(--line); border-radius: 6px; color: var(--key-ink); cursor: pointer; overflow: hidden; text-align: center;
+       font-size: clamp(8px, 1.05vw, 12px); line-height: 1.1; padding: 2px; box-shadow: 0 1px 0 var(--line); transition: background .08s; }
+  .k:hover { border-color: var(--muted); }
+  .k.sel { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .k small { color: var(--muted); font-size: .8em; margin-top: 2px; }
+  .k.brush { cursor: crosshair; touch-action: none; }
+  .k.brush:hover { outline: 2px dashed var(--accent); outline-offset: 1px; }
+  .k.lit { background: var(--lit); border-color: color-mix(in srgb, var(--lit) 70%, #000); }
+  .k.lit.sel { outline: 3px solid var(--accent); outline-offset: 1px; background: var(--lit); }
+  .swatch { width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 2px solid var(--line); }
+  .swatch.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  input[type=color] { width: 44px; height: 30px; border: 1px solid var(--line); border-radius: 6px; padding: 2px; background: var(--panel); }
+  .k.sel small { color: var(--accent); }
+  .k.changed::after { content: ""; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
+  .row label { color: var(--muted); min-width: 120px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 4px 0 12px; }
+  .picker h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .picker .grid { display: flex; flex-wrap: wrap; gap: 5px; }
+  .picker button { padding: 5px 10px; font-size: 13px; }
+  input[type=range] { width: 260px; accent-color: var(--accent); }
+  input[type=number] { width: 80px; font: inherit; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+  select { font: inherit; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+  #status { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 16px;
+            border-radius: 999px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  #status.show { opacity: 1; }
+  #status.err { background: var(--err); color: #fff; }
+  .empty { text-align: center; padding: 70px 20px; color: var(--muted); }
+  .empty h2 { color: var(--ink); font-size: 20px; margin: 0 0 8px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>HERO 68 HE</h1>
+  <span class="info" id="info">not connected</span>
+  <span class="spacer"></span>
+  <button id="connect" class="primary">Connect keyboard</button>
+</header>
+<main>
+  <div class="card empty" id="empty">
+    <h2>Plug in your keyboard and click Connect</h2>
+    <div>Pick “HERO 68 HE” in Chrome’s popup. Close the AULA website first so they don’t fight over the keyboard.</div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="tabs" id="tabs"></div>
+    <div class="card">
+      <div class="row hidden" id="layers"></div>
+      <div class="hint" id="hint"></div>
+      <div class="board" id="board"></div>
+      <div class="row" id="selrow"><button id="selAll">Select all</button><button id="selNone">Clear selection</button></div>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+</main>
+<div id="status"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

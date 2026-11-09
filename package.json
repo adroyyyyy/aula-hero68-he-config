@@ -1,0 +1,62 @@
+{
+  "name": "hero68-config",
+  "version": "0.1.0",
+  "description": "Open-source configurator for the AULA HERO 68 HE keyboard",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --mac --dir",
+    "dist:all": "electron-builder -mwl",
+    "backup": "node tools/backup.js",
+    "test": "node tools/ui-smoke.mjs"
+  },
+  "keywords": [],
+  "author": "adroyyyyy",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "node-hid": "^3.1.0"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "jsdom": "^24.1.3"
+  },
+  "productName": "HERO68 Config",
+  "build": {
+    "appId": "io.github.hero68config",
+    "productName": "HERO68 Config",
+    "files": [
+      "app/**",
+      "web/**",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/node-hid/**"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "identity": null
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adroyyyyy/aula-hero68-he-config.git"
+  },
+  "homepage": "https://github.com/adroyyyyy/aula-hero68-he-config"
+}
