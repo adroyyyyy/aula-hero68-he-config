@@ -5,7 +5,7 @@
   "main": "app/main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --mac --dir",
+    "dist": "electron-builder --mac",
     "dist:all": "electron-builder -mwl",
     "backup": "node tools/backup.js",
     "test": "node tools/ui-smoke.mjs"
@@ -37,10 +37,23 @@
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
       ],
-      "identity": null
+      "identity": null,
+      "hardenedRuntime": false
     },
     "win": {
       "target": [
@@ -52,7 +65,12 @@
       "target": [
         "AppImage"
       ]
-    }
+    },
+    "dmg": {
+      "title": "HERO68 Config ${version}"
+    },
+    "artifactName": "HERO68-Config-${version}-mac-${arch}.${ext}",
+    "afterPack": "tools/adhoc-sign.cjs"
   },
   "repository": {
     "type": "git",

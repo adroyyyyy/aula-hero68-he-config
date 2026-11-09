@@ -17,15 +17,23 @@ The keyboard connects automatically, with no browser and no permission popups. E
 
 ## Install
 
-Download the latest release, or build it yourself:
+Download the `.dmg` from the [latest release](https://github.com/adroyyyyy/aula-hero68-he-config/releases/latest):
+- `arm64` is for Apple Silicon Macs (M1 or newer).
+- `x64` is for Intel Macs.
+
+The app isn't notarized by Apple, so the first time you open it, macOS blocks it:
+1. Open the app. When macOS blocks it, click **Done**.
+2. Go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**.
+
+Or remove the download flag in Terminal: `xattr -dr com.apple.quarantine "/Applications/HERO68 Config.app"`
+
+Or build it yourself:
 
 ```bash
 npm install
 npm start          # run in development
-npm run dist       # build dist/mac-arm64/HERO68 Config.app
+npm run dist       # build .dmg/.zip for Apple Silicon and Intel into dist/
 ```
-
-The builds aren't code-signed. On macOS, right-click the app and choose **Open** the first time.
 
 Close AULA's website before using this app. Only one program can talk to the keyboard at a time.
 
@@ -84,6 +92,10 @@ Keycodes are 32-bit:
 - Profiles
 - More AULA HE boards. They use the same protocol, so each one mainly needs a layout file.
 - Windows/Linux builds (the code is cross-platform; the builds are untested)
+
+## Credits
+
+Built by [adroyyyyy](https://github.com/adroyyyyy), with help from [Claude](https://claude.ai) (Anthropic's AI assistant), which assisted with reverse-engineering the protocol and writing code.
 
 ## License
 
